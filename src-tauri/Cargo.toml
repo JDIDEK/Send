@@ -26,3 +26,6 @@ iroh-bytes = "0.14.0"
 tokio = { version = "1", features = ["full"] }
 futures-util = "0.3"
 serde = { version = "1", features = ["derive"] }
+async-trait = "0.1"
+thiserror = "1"
+quic-rpc = "0.7.0"
