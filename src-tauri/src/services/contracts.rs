@@ -25,14 +25,14 @@ impl ShareFileRequest {
 #[derive(Debug, Clone)]
 pub struct ReceiveFileRequest {
     ticket: String,
-    download_dir: PathBuf,
+    destination_path: PathBuf,
 }
 
 impl ReceiveFileRequest {
-    pub fn new(ticket: impl Into<String>, download_dir: impl Into<PathBuf>) -> Self {
+    pub fn new(ticket: impl Into<String>, destination_path: impl Into<PathBuf>) -> Self {
         Self {
             ticket: ticket.into(),
-            download_dir: download_dir.into(),
+            destination_path: destination_path.into(),
         }
     }
 
@@ -40,8 +40,8 @@ impl ReceiveFileRequest {
         &self.ticket
     }
 
-    pub fn download_dir(&self) -> &Path {
-        &self.download_dir
+    pub fn destination_path(&self) -> &Path {
+        &self.destination_path
     }
 }
 

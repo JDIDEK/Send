@@ -28,9 +28,10 @@ export interface Toast {
 
 export interface TransferClient {
   selectFile(): Promise<string | null>;
+  chooseReceiveLocation(): Promise<string | null>;
   getFileInfo(path: string): Promise<string>;
   shareFile(path: string): Promise<string>;
-  receiveFile(ticket: string): Promise<string>;
+  receiveFile(ticket: string, destinationPath: string): Promise<string>;
   copyToClipboard(value: string): Promise<void>;
   subscribeUploadProgress(handler: (progress: TransferProgress) => void): Promise<Unsubscribe>;
   subscribeDownloadProgress(handler: (progress: TransferProgress) => void): Promise<Unsubscribe>;

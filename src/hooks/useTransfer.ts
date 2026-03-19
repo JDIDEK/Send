@@ -132,12 +132,17 @@ export function useTransfer(client: TransferClient = tauriTransferClient): {
       return;
     }
 
+    const destinationPath = await client.chooseReceiveLocation();
+    if (!destinationPath) {
+      return;
+    }
+
     setIsReceiving(true);
     setReceivedPath(null);
     setDownloadProgress(null);
 
     try {
-      const savedPath = await client.receiveFile(trimmedTicket);
+      const savedPath = await client.receiveFile(trimmedTicket, destinationPath);
       setReceivedPath(savedPath);
       pushToast("success", "Fichier reçu avec succès.");
     } catch (error) {

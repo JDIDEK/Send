@@ -19,7 +19,7 @@ use crate::{
     progress::{
         LinearProgressMetricsCalculator, ProgressReporter, ProgressTracker, TransferStage,
     },
-    utils::{sanitize_relative_path, short_hash, unique_path},
+    utils::{sanitize_relative_path, unique_path},
 };
 
 use super::{
@@ -216,7 +216,7 @@ where
         }
 
         let saved_path = self
-            .export_received_content(&client, &ticket, request.download_dir())
+            .export_received_content(&client, &ticket, request.destination_path())
             .await?;
 
         reporter.report(tracker.snapshot(
@@ -236,14 +236,14 @@ where
         &self,
         client: &iroh::client::Iroh<C>,
         ticket: &BlobTicket,
-        download_dir: &Path,
+        destination_path: &Path,
     ) -> AppResult<std::path::PathBuf>
     where
         C: ServiceConnection<ProviderService>,
     {
         match ticket.format() {
-            BlobFormat::Raw => self.export_raw_blob(client, ticket, download_dir).await,
-            BlobFormat::HashSeq => self.export_collection_blob(client, ticket, download_dir).await,
+            BlobFormat::Raw => self.export_raw_blob(client, ticket, destination_path).await,
+            BlobFormat::HashSeq => self.export_collection_blob(client, ticket, destination_path).await,
         }
     }
 
@@ -251,13 +251,12 @@ where
         &self,
         client: &iroh::client::Iroh<C>,
         ticket: &BlobTicket,
-        download_dir: &Path,
+        destination_path: &Path,
     ) -> AppResult<std::path::PathBuf>
     where
         C: ServiceConnection<ProviderService>,
     {
-        let destination =
-            unique_path(download_dir.join(format!("altsendme-{}", short_hash(ticket))));
+        let destination = unique_path(destination_path.to_path_buf());
 
         client
             .blobs
@@ -280,7 +279,7 @@ where
         &self,
         client: &iroh::client::Iroh<C>,
         ticket: &BlobTicket,
-        download_dir: &Path,
+        destination_path: &Path,
     ) -> AppResult<std::path::PathBuf>
     where
         C: ServiceConnection<ProviderService>,
@@ -297,7 +296,11 @@ where
 
         if entries.len() == 1 {
             let (name, hash) = &entries[0];
-            let destination = unique_path(download_dir.join(sanitize_relative_path(name)));
+            let destination = if destination_path.extension().is_some() {
+                unique_path(destination_path.to_path_buf())
+            } else {
+                unique_path(destination_path.join(sanitize_relative_path(name)))
+            };
 
             client
                 .blobs
@@ -315,8 +318,7 @@ where
 
             Ok(destination)
         } else {
-            let destination =
-                unique_path(download_dir.join(format!("AltSendme-{}", short_hash(ticket))));
+            let destination = unique_path(destination_path.to_path_buf());
 
             client
                 .blobs

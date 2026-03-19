@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use tauri::{AppHandle, Emitter, Manager, State};
+use tauri::{AppHandle, Emitter, State};
 
 use crate::{
     progress::{ProgressReporter, TransferProgress, DOWNLOAD_PROGRESS_EVENT, UPLOAD_PROGRESS_EVENT},
@@ -53,16 +53,13 @@ pub async fn receive_file(
     app: AppHandle,
     state: State<'_, AppState>,
     ticket: String,
+    destination_path: String,
 ) -> Result<String, String> {
-    let download_dir = app
-        .path()
-        .download_dir()
-        .map_err(|error| format!("Impossible de localiser le dossier Téléchargements : {error}"))?;
     let reporter = TauriProgressReporter::new(app, DOWNLOAD_PROGRESS_EVENT);
 
     state
         .transfer_service()
-        .receive_file(ReceiveFileRequest::new(ticket, download_dir), &reporter)
+        .receive_file(ReceiveFileRequest::new(ticket, destination_path), &reporter)
         .await
         .map_err(|error| error.to_string())
 }

@@ -1,7 +1,5 @@
 use std::path::{Component, Path, PathBuf};
 
-use iroh::ticket::BlobTicket;
-
 pub fn sanitize_relative_path(name: &str) -> PathBuf {
     let mut sanitized = PathBuf::new();
 
@@ -42,10 +40,6 @@ pub fn unique_path(path: PathBuf) -> PathBuf {
     }
 
     unreachable!("un chemin libre finit toujours par être trouvé")
-}
-
-pub fn short_hash(ticket: &BlobTicket) -> String {
-    ticket.hash().to_string().chars().take(12).collect()
 }
 
 #[cfg(test)]
