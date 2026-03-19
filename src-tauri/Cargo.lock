@@ -5542,8 +5542,10 @@ dependencies = [
 name = "send"
 version = "0.1.0"
 dependencies = [
+ "futures-util",
  "iroh",
  "iroh-bytes",
+ "serde",
  "tauri",
  "tauri-build",
  "tauri-plugin-dialog",
